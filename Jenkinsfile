@@ -2,12 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                
-                git 'https://github.com/aleedurrani/JenkinsRepo2.0'
-            }
-        }
         
         stage('Dependency Installation') {
             steps {
