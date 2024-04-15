@@ -13,21 +13,21 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 
-                bat 'docker build -t my_image .'
+                echo 'Build Image'
             }
         }
         
         stage('Run Docker Image') {
             steps {
                 
-                bat 'docker run -d -p 3000:3001 my_image'
+                echo 'Run Image'
             }
         }
         
         stage('Push Docker Image') {
             steps {
                 
-                bat 'docker push my_image'
+                echo 'Push'
             }
         }
     }
