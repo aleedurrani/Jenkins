@@ -6,28 +6,28 @@ pipeline {
         stage('Dependency Installation') {
             steps {
                 
-               echo 'Install'
+               bat 'npm install' 
             }
         }
         
         stage('Build Docker Image') {
             steps {
                 
-                echo 'Build Image'
+                bat 'docker build -t my_image .'
             }
         }
         
         stage('Run Docker Image') {
             steps {
                 
-                echo 'Run Image'
+                bat 'docker run -d -p 3000:3001 my_image'
             }
         }
         
         stage('Push Docker Image') {
             steps {
                 
-                echo 'Push'
+                bat 'docker push my_image'
             }
         }
     }
