@@ -1,77 +1,173 @@
-# Simple React JS Project
+# React App CI/CD Pipeline with Jenkins and Docker
 
-## What is the use of this Repo
+Welcome to the React App CI/CD Pipeline repository! This project demonstrates how to set up a Continuous Integration and Continuous Deployment (CI/CD) pipeline for a React application using Jenkins and Docker. Below, you'll find detailed instructions and explanations for each part of the setup.
 
-This Project is a Simple ReactJS Project which demonstrates the following
-1. Creating a Component in React
-2. Making HTTP calls
-3. Communicating between parent and child component
-4. Using Bootstrap along with React
-5. Using Basic Routing in React
+## Table of Contents
+- Introduction
+- Project Structure
+- Jenkins Pipeline
+- Docker Setup
+- Getting Started
+- License
 
-The project Template can be used to build bigger projects
+## Introduction
+This repository contains a Jenkinsfile and a Dockerfile for automating the build, testing, and deployment of a React application. The Jenkins pipeline installs dependencies, builds the Docker image, runs the Docker container, and pushes the image to a Docker registry. The Dockerfile is a multi-stage build that first compiles the React app and then serves it using Nginx.
 
-## Live Application URL
+## Project Structure
 
-### https://aditya-sridhar.github.io/simple-reactjs-app
-This URL has the application deployed in
+├── Jenkinsfile
 
-## Prerequisites
+├── Dockerfile
 
-### Install Node JS
-Refer to https://nodejs.org/en/ to install nodejs
+├── src
 
-### Install create-react-app
-Install create-react-app npm package globally. This will help to easily run the project and also build the source files easily. Use the following command to install create-react-app
+│   ├── components
 
-```bash
-npm install -g create-react-app
-```
-## Live Application URL
+│   ├── App.js
 
-The Application is deployed in https://aditya-sridhar.github.io/simple-reactjs-app
+│   ├── index.js
 
-Click on the link to see the application
+│   └── ...
 
-## Cloning and Running the Application in local
+├── public
 
-Clone the project into local
+│   ├── index.html
 
-Install all the npm packages. Go into the project folder and type the following command to install all npm packages
+│   └── ...
 
-```bash
-npm install
-```
+├── package.json
 
-In order to run the application Type the following command
+└── ...
 
-```bash
-npm start
-```
+**Jenkinsfile:** Contains the Jenkins pipeline configuration.
 
-The Application Runs on **localhost:3000**
+**Dockerfile:** Defines the Docker image build process.
 
-## Application design
+**src/:** Source code for the React application.
 
-#### Components
+**public/:**  Public assets for the React application.
 
-1. **Customers** Component : This Component displays a list of customers. This Component gets the data from a json file in assets folder
+**package.json:** Node.js dependencies and scripts.
 
-2. **CustomerDetails** Component : This Component Displays the details of the selected customer. This Component gets its data from a json file in assets folder as well. This Component is the Child Component of *Customers* Component
+## Jenkins Pipeline
 
-#### HTTP client
+### Jenkinsfile:
 
-**axios** library is used to make HTTP Calls
+pipeline {
 
-#### URL
+    agent any
 
-The application has just one url /customerlist which ties to *Customers* Component
+    stages {
+        stage('Dependency Installation') {
+            steps {
+                bat 'npm install'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t my_image .'
+            }
+        }
+        
+        stage('Run Docker Image') {
+            steps {
+                bat 'docker run -d -p 3000:3001 my_image'
+            }
+        }
+        
+        stage('Push Docker Image') {
+            steps {
+                bat 'docker push my_image'
+            }
+        }
+    }
 
-## Resources
+    post {
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed :('
+        }
+    }
+}
 
-**create-react-app** : The following link has all the commands that can be used with create-react-app
-https://github.com/facebook/create-react-app
+### Stages Explanation
 
-**ReactJS** : Refer to https://reactjs.org/ to understand the concepts of ReactJS
+**Dependency Installation:** Installs the necessary Node.js dependencies.
 
-**React Bootstrap** : Refer to https://react-bootstrap.github.io/getting-started/introduction/ to understand how to use React Bootstrap
+**Build Docker Image:** Builds a Docker image for the React app.
+
+**Run Docker Image:** Runs the Docker container.
+
+**Push Docker Image:** Pushes the Docker image to a registry.
+
+**Post Actions**
+- _Success:_ Prints a success message.
+- _Failure:_ Prints a failure message.
+
+## Docker Setup
+
+### Dockerfile:
+
+FROM node:16 as build
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+FROM nginx:stable-alpine
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+### Explanation
+
+**Build Stage:**
+
+- Uses the official Node.js image.
+- Sets the working directory.
+- Installs dependencies.
+- Copies the source code.
+- Builds the React app.
+  
+**Serve Stage:**
+
+- Uses the official Nginx image.
+- Copies the build output to Nginx's HTML directory.
+- Exposes port 80.
+- Starts Nginx.
+ 
+## Getting Started
+To get started with this project, follow these steps:
+
+**Clone the repository:**
+
+git clone https://github.com/yourusername/your-repo.git 
+
+**Set up Jenkins:**
+
+- Install Jenkins and configure it.
+- Create a new Jenkins job and use the Jenkinsfile from this repository.
+
+**Build and Run Docker Image Locally:**
+
+- docker build -t my_image .
+- docker run -d -p 3000:3001 my_image
+
+**Access the Application:**
+
+Open a web browser and navigate to http://localhost:3000.
+
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
