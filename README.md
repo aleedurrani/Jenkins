@@ -170,4 +170,4 @@ git clone https://github.com/yourusername/your-repo.git
 Open a web browser and navigate to http://localhost:3000.
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License.
